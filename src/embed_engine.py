@@ -1,8 +1,7 @@
 import discord
-import message_constants
+import constants.message_constants as message_constants
 
-from discord import Embed
-from chess_piece import PieceColor
+from src.chess_piece import PieceColor
 
 class EmbedEngine:
     """ Engine for generating relevant discord Embeds """

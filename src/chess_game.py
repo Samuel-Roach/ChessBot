@@ -1,7 +1,7 @@
-import game_constants
+import constants.game_constants as game_constants
 
-from game_renderer import ChessRenderer
-from chess_piece import PieceColor
+from src.game_renderer import ChessRenderer
+from src.chess_piece import PieceColor
 
 
 class ChessGameEngine:

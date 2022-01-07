@@ -1,8 +1,8 @@
-import game_constants
+import constants.game_constants as game_constants
 import os
 
-from chess_piece import ChessPiece
 from PIL import Image
+from src.chess_piece import ChessPiece
 
 class ChessRenderer:
     """ Renderer for a game of chess """

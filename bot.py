@@ -3,9 +3,9 @@ import discord
 
 from discord.ext import commands
 from dotenv import load_dotenv
-from chess_piece import PieceColor
-from games_manager import GamesManager
-from embed_engine import EmbedEngine
+from src.chess_piece import PieceColor
+from src.games_manager import GamesManager
+from src.embed_engine import EmbedEngine
 
 load_dotenv()
 TOKEN = os.getenv('DISCORD_TOKEN')

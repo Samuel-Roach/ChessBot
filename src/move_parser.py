@@ -1,4 +1,4 @@
-from chess_piece import ChessPiece, PieceColor, PieceType
+from src.chess_piece import ChessPiece, PieceColor, PieceType
 from dataclasses import dataclass
 
 @dataclass

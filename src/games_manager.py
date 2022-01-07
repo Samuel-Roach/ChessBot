@@ -2,8 +2,8 @@ import discord
 
 from dataclasses import dataclass
 from discord.errors import InvalidData
-from chess_game import ChessGameEngine
-from chess_piece import PieceColor
+from src.chess_game import ChessGameEngine
+from src.chess_piece import PieceColor
 
 
 class GamesManager:

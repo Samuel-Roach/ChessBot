@@ -1,4 +1,3 @@
-from discord import Color
 import discord
 
 ERROR_TITLE = 'Error'

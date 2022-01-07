@@ -1,4 +1,4 @@
-from chess_piece import ChessPiece, PieceType, PieceColor
+from src.chess_piece import ChessPiece, PieceType, PieceColor
 
 DEFAULT_BOARD = [
         [
