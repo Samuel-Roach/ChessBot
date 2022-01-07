@@ -26,6 +26,6 @@ Offer a draw to the player you're playing against
 
 Resign the current match you are playing
 
-# How to install
+## How to install
 
-# FAQ
+## FAQ
