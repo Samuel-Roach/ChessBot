@@ -6,23 +6,23 @@ ChessBot is a Python based discord bot, written to allow users in a server to pl
 library is used to handle moves, and all code can be found in this repository.
 
 ## How to use
-> $challenge @{user}
+`` $challenge @{user}``
 
 Create a challenge between yourself and the user
 
-> $accept @{user}
+`` $accept @{user}   ``
 
 Accept the challenge extended to you by the user
 
-> $move {first_pos} {second_pos}
+`` $move {first_pos} {second_pos}``
 
 Move the piece located at the first position to the second position
 
-> $draw
+`` $draw ``
 
 Offer a draw to the player you're playing against
 
-> $resign
+`` $resign   ``
 
 Resign the current match you are playing
 
