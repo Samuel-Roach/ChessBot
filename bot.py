@@ -67,7 +67,7 @@ async def _move(ctx, move_start, move_end):
         current_game = games_manager.find_game_for_user(ctx.author)
 
         # Parse the move
-        
+        current_game.game.move(move_start, move_end)
 
         # Make the move
         current_user, piece_color = games_manager.find_current_user_for_game(current_game)

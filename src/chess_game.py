@@ -1,6 +1,7 @@
 import constants.game_constants as game_constants
 
 from src.game_renderer import ChessRenderer
+from src.move_parser import MoveParser
 from src.chess_piece import PieceColor
 
 
@@ -9,16 +10,21 @@ class ChessGameEngine:
 
     board = game_constants.DEFAULT_BOARD
     renderer = None
+    move_parser = None
     to_move = PieceColor.WHITE
 
 
     def __init__(self) -> None:
         # Create the basic board
         self.renderer = ChessRenderer()
+        self.move_parser = MoveParser()
         pass
 
 
     # Move
+    def move(self, start: str, end: str) -> bool:
+        """ Move a piece from the start position to the end position """
+        self.move_parser.parse_move(start, end, self.board)
 
 
     def render_board(self) -> str:
