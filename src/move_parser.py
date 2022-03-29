@@ -7,21 +7,26 @@ class ChessMove:
     # About the move
     piece: ChessPiece
     move_notation: str
-    current_location: tuple
-    next_location: tuple
+    start_move: tuple
+    end_move: tuple
 
     # Additional information
     capture: ChessPiece
     check: bool
     checkmate: bool
     castling: bool
+    en_passant: bool
 
 
 class MoveParser:
     """ Parser to take a string value and return a ChessMove"""
+    current_board: list
+    current_move: ChessMove
 
-    # def check_valid_move(self, current_board, start_position: tuple(int, int), end_position: tuple(int, int)):
-    #     piece_to_move = current_board[start_position[0]][start_position[1]]
+
+    def __init__(self) -> None:
+        pass
+
 
     def _str_to_tuple(self, string: str):
         """ Convert a string representation of a chess move into the tuple representation """
@@ -32,93 +37,83 @@ class MoveParser:
         else:
             raise Exception(f"Invalid move coords: {coord1}, {coord2}")
 
+
     def convert_start_end(self, start: str, end: str):
         """ Take the start and end positions and return their tuple(int, int) representation """
         return self._str_to_tuple(start), self._str_to_tuple(end)
 
-    def possible_moves(self, piece: ChessPiece, position: tuple):
-        """ Generate the possible moves for a ChessPiece on a given square """
-        possible_moves = []
 
-        match piece.piece_type:
+    def possible_move(self):
+        """ Check if the current move defined is a possible move """
+        end_piece = self.current_board[self.current_move.end_move[1]][self.current_move.end_move[0]]
+
+        if end_piece and (end_piece.color == self.current_move.piece.color):
+            return False
+        else:
+            self.current_move.capture = end_piece
+
+        match self.current_move.piece.piece_type:
             case PieceType.PAWN:
-                print("PAWN")
+                print("PAWN check")
             case PieceType.KNIGHT:
-                possible_moves = self.possible_moves_knight(position)
+                return self.valid_move_knight()
             case PieceType.BISHOP:
-                possible_moves = self.possible_moves_bishop(position)
+                return self.valid_move_bishop()
             case PieceType.ROOK:
-                possible_moves = self.possible_moves_rook(position)
+                return self.valid_move_rook()
             case PieceType.QUEEN:
-                possible_moves = self.possible_moves_queen(position)
+                return self.valid_move_queen()
             case PieceType.KING:
-                possible_moves = self.possible_moves_king(position)
-
-        self._remove_impossible_positions(possible_moves, position)
-
-        return possible_moves
+                return self.valid_move_king()
 
 
-    # def possible_moves_pawn(self, ):
+    def valid_move_pawn(self):
+        return False
+
+    def valid_move_knight(self):
+        """ Evaluate if a knight move is valid """
+
+        x_change = abs(self.current_move.end_move[0] - self.current_move.start_move[0])
+        y_change = abs(self.current_move.end_move[1] - self.current_move.start_move[1])
+
+        return (x_change == 2 and y_change == 1) or (x_change == 1 and y_change == 2)
 
 
-    def possible_moves_knight(self, position: tuple):
-        """ Return the possible moves for a knight at the given position """
-        possible_moves = []
+    def valid_move_bishop(self):
+        """ Evaluate if a bishop move is valid """
 
-        possible_changes = [
-            (2, 1),
-            (2, -1),
-            (-2, 1),
-            (-2, -1),
-            (1, 2),
-            (1, -2),
-            (-2, 2),
-            (-2, -2)
-        ]
-
-        for change in possible_changes:
-            possible_moves.append((position[0] + change[0], position[1] + change[1]))
-
-        return possible_moves
+        return False
 
 
-    def possible_moves_bishop(self, position: tuple):
-        """ Return the possible moves for a bishop at the given position """
-        possible_moves = []
+    def valid_move_rook(self):
+        """ Evaluate if a rook move is valid """
 
-        self._add_diagonals(possible_moves, position)
+        if (self.current_move.start_move[0] != self.current_move.end_move[0]) or (self.current_move.start_move[1] != self.current_move.end_move[1]):
+            return False
 
-        return possible_moves
+        if self.current_move.start_move[0] == self.current_move.end_move[0]:
+            x = self.current_move.start_move[0]
+            for y in range(self.current_move.start_move[1], self.current_move.end_move[1]):
+                if (self.current_move.capture != None) and (y == self.current_move.end_move[1]):
+                    return True
 
+                if self.current_board[y][x] != None:
+                    return False
 
-    def possible_moves_rook(self, position: tuple):
-        """ Return the possible moves for a rook at the given position """
-        possible_moves = []
-
-        self._add_perpendiculars(possible_moves, position)
-
-        return possible_moves
-
-
-    def possible_moves_queen(self, position: tuple):
-        """ Return the possible moves for a queen at the given position """
-        possible_moves = []
-
-        self._add_diagonals(possible_moves, position)
-        self._add_perpendiculars(possible_moves, position)
-
-        return possible_moves
+            return True
+        return False
 
 
-    def possible_moves_king(self, position: tuple):
-        """ Return the possible moves for a king at the given position """
-        possible_moves = []
+    def valid_move_queen(self):
+        """ Evaluate if a queen move is valid """
 
-        self._add_diagonals(possible_moves, position, 1)
-        self._add_perpendiculars(possible_moves, position, 1)
+        return False
 
-        return possible_moves
+
+    def valid_move_king(self):
+        """ Evaluate if a king move is valid """
+
+        return False
 
 
     def _add_diagonals(self, positions: list, current_position: tuple, size: int = 7):
@@ -152,12 +147,25 @@ class MoveParser:
 
     def parse_move(self, start: str, end: str, current_board: list):
         """ Parse a move defined by a start and end (e.g. a3, a4) and turn it into a ChessMove type """
+        self.current_board = current_board
+
         start_move, end_move = self.convert_start_end(start, end)
-        piece_to_move = current_board[start_move[1]][start_move[0]]
-        possible_moves = self.possible_moves(piece_to_move, start_move)
-        print(start_move)
-        print(end_move)
-        print(piece_to_move.piece_type)
+        self.current_move = ChessMove(
+            piece=current_board[start_move[1]][start_move[0]],
+            start_move=start_move,
+            end_move=end_move,
+            capture=None,
+            check=False,
+            checkmate=False,
+            castling=False,
+            en_passant=False
+        )
+
+        possible_moves = self.possible_move()
+        print(f"Start {self.start_move}")
+        print(f"End   {self.end_move}")
+        print(f"Piece {self.piece.piece_type}")
+        print(possible_moves)
 
         # Parse strings into locations
         # Check the locations are valid
