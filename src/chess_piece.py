@@ -22,8 +22,10 @@ class ChessPiece:
     """ Representation of a Chess Piece """
     color: PieceColor
     piece_type: PieceType
+    moves: int
 
     def __init__(self, color: PieceColor, piece_type: PieceType) -> None:
         self.color = color
         self.piece_type = piece_type
+        self.moves = 0
         pass

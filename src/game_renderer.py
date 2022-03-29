@@ -56,10 +56,10 @@ class ChessRenderer:
             for item in row:
                 if type(item) is ChessPiece:
                     item_image = Image.open(self.ICONS[item.color][item.piece_type]["image"], 'r').convert('RGBA').rotate(180)
-                    offset = ((150 * position[0]), (150 * position[1]))
+                    offset = (1050 - (150 * position[0]), (150 * position[1]))
                     final_image.paste(item_image, offset, item_image)
                 position = (list(position)[0] + 1, list(position)[1]) 
-            position = (0, list(position)[1] + 1) 
+            position = (0, list(position)[1] + 1)
 
         if os.path.exists(f'board_renders/{save_name}.png'):
             os.remove(f'board_renders/{save_name}.png')

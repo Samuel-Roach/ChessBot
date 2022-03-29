@@ -52,53 +52,53 @@ GAME_ICONS = {
         PieceColor.BLACK: {
             PieceType.PAWN: {
                 "icon": "♟︎",
-                "image": "board_src/BLACK_PAWN.png"
+                "image": "img/BLACK_PAWN.png"
                 },
             PieceType.KNIGHT: {
                 "icon": "♞",
-                "image": "board_src/BLACK_KNIGHT.png"
+                "image": "img/BLACK_KNIGHT.png"
                 },
             PieceType.BISHOP: {
                 "icon": "♝",
-                "image": "board_src/BLACK_BISHOP.png"
+                "image": "img/BLACK_BISHOP.png"
                 },
             PieceType.ROOK: {
                 "icon": "♜",
-                "image": "board_src/BLACK_ROOK.png"
+                "image": "img/BLACK_ROOK.png"
                 },
             PieceType.QUEEN: {
                 "icon": "♛",
-                "image": "board_src/BLACK_QUEEN.png"
+                "image": "img/BLACK_QUEEN.png"
                 },
             PieceType.KING: {
                 "icon": "♚",
-                "image": "board_src/BLACK_KING.png"
+                "image": "img/BLACK_KING.png"
                 }
         },
         PieceColor.WHITE: {
             PieceType.PAWN: {
                 "icon": "♙",
-                "image": "board_src/WHITE_PAWN.png"
+                "image": "img/WHITE_PAWN.png"
                 },
             PieceType.KNIGHT: {
                 "icon": "♘",
-                "image": "board_src/WHITE_KNIGHT.png"
+                "image": "img/WHITE_KNIGHT.png"
                 },
             PieceType.BISHOP: {
                 "icon": "♗",
-                "image": "board_src/WHITE_BISHOP.png"
+                "image": "img/WHITE_BISHOP.png"
                 },
             PieceType.ROOK: {
                 "icon": "♖",
-                "image": "board_src/WHITE_ROOK.png"
+                "image": "img/WHITE_ROOK.png"
                 },
             PieceType.QUEEN: {
                 "icon": "♕",
-                "image": "board_src/WHITE_QUEEN.png"
+                "image": "img/WHITE_QUEEN.png"
                 },
             PieceType.KING: {
                 "icon": "♔",
-                "image": "board_src/WHITE_KING.png"
+                "image": "img/WHITE_KING.png"
                 }
         },
 
@@ -107,5 +107,5 @@ GAME_ICONS = {
         "BLACK_TILE": "▮",
         "WHITE_TILE": "▯",
 
-        "BOARD": "board_src/board.png"
+        "BOARD": "img/BOARD.png"
     }

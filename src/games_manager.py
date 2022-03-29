@@ -137,8 +137,6 @@ class GamesManager:
         """ Find the current game for a user. If no game is found, an error is thrown"""
         return self.CURRENT_GAMES[self.find_gameid_for_user(user)]
 
-        raise InvalidData(f"No current game can be found for {user.mention}")
-
 
     def render_game(self, current_game: ChessGame):
         """ Return the render of a game from it's game_id """

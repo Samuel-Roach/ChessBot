@@ -24,7 +24,12 @@ class ChessGameEngine:
     # Move
     def move(self, start: str, end: str) -> bool:
         """ Move a piece from the start position to the end position """
-        self.move_parser.parse_move(start, end, self.board)
+        self.move_parser.parse_move(start, end, self.board, self.to_move)
+        
+        if (self.to_move == PieceColor.WHITE):
+            self.to_move = PieceColor.BLACK
+        else:
+            self.to_move = PieceColor.WHITE
 
 
     def render_board(self) -> str:
@@ -44,5 +49,3 @@ class ChessGameEngine:
 
 
     # All shit around this.
-
-    # Maybe make a class called ChessMove
