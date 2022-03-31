@@ -17,7 +17,6 @@ class ChessRenderer:
 
     def _render_row(self, row: list, row_no: int):
         """ Return a string representation of a row on a chess board """
-
         column = 1
         tile_color = self.ICONS["BLACK_TILE"] if row_no % 2 == column % 2 else self.ICONS["WHITE_TILE"]
         render_array = []
@@ -37,7 +36,6 @@ class ChessRenderer:
 
     def render(self, board: list):
         """ Return a string representation of the board """
-
         render_rows = []
 
         row_no = 1
@@ -50,7 +48,6 @@ class ChessRenderer:
 
     def render_file(self, board: list, previous_move: ChessMove, save_name: str):
         """ Return the string location of a representation image of this board """
-
         background = Image.open(self.ICONS["BOARD"], 'r').convert('RGBA').rotate(180)
         final_image = Image.new('RGBA', (1200, 1200))
         final_image.paste(background)

@@ -72,6 +72,7 @@ class EmbedEngine:
                     title=message_constants.CURRENT_MOVE_TITLE,
                     description=message_constants.CURRENT_MOVE_DESCRIPTION,
                     color=message_constants.CURRENT_MOVE_COLOR):
+        """ Returns the embed for the current move to be made """
         file = discord.File(current_board_location, filename="board.png")
         board_embed = self.embed(title, description.format(user.mention, user_color.name), color)
         board_embed.set_image(url="attachment://board.png")

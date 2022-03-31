@@ -125,7 +125,7 @@ class GamesManager:
 
 
     def find_gameid_for_user(self, user: discord.User):
-        """ Find the current game id for a user. If no game is found, an error is thrown"""
+        """ Find the current game id for a user. If no game is found, an error is thrown """
         for game_id in self.CURRENT_GAMES:
             if str(user.id) in game_id:
                 return game_id
@@ -134,7 +134,7 @@ class GamesManager:
 
 
     def find_game_for_user(self, user: discord.User) -> ChessGame:
-        """ Find the current game for a user. If no game is found, an error is thrown"""
+        """ Find the current game for a user. If no game is found, an error is thrown """
         return self.CURRENT_GAMES[self.find_gameid_for_user(user)]
 
 
