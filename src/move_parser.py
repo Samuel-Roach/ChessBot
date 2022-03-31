@@ -64,6 +64,35 @@ class MoveParser:
             return False
 
 
+    def _castling_check(self, x_change: int):
+        """ Check if the current move is castling """
+        if (abs(x_change) != 2):
+            return False
+        
+        if (x_change == 2):
+            moving_rook = self.current_board[self.current_move.start_move[1]][7]
+            pieces_between = [self.current_board[self.current_move.start_move[1]][5], self.current_board[self.current_move.start_move[1]][6]]
+            if (
+                moving_rook.moves == 0 and
+                all(piece == None for piece in pieces_between) and
+                self.current_move.piece.moves == 0
+               ):
+                self.current_move.castling = True
+                return True
+
+        if (x_change == -2):
+            moving_rook = self.current_board[self.current_move.start_move[1]][0]
+            pieces_between = [self.current_board[self.current_move.start_move[1]][1], self.current_board[self.current_move.start_move[1]][2], self.current_board[self.current_move.start_move[1]][3]]
+            if (
+                moving_rook.moves == 0 and
+                all(piece == None for piece in pieces_between) and
+                self.current_move.piece.moves == 0
+               ):
+                self.current_move.castling = True
+                return True
+
+        return False
+
     def possible_move(self):
         """ Check if the current move defined is a possible move """
         end_piece = self.current_board[self.current_move.end_move[1]][self.current_move.end_move[0]]
@@ -180,12 +209,12 @@ class MoveParser:
 
     def valid_move_king(self):
         """ Evaluate if a king move is valid """
-        x_change = abs(self.current_move.end_move[0] - self.current_move.start_move[0])
+        x_change = self.current_move.end_move[0] - self.current_move.start_move[0]
         y_change = abs(self.current_move.end_move[1] - self.current_move.start_move[1])
 
         # TODO Get castling working
 
-        return (x_change <= 1) and (y_change <= 1)
+        return ((abs(x_change) <= 1) and (y_change <= 1)) or (self._castling_check(x_change) and y_change == 0)
 
 
     def make_move(self, board: list, move: ChessMove):
@@ -201,6 +230,22 @@ class MoveParser:
             board[remove_y][move.end_move[0]] = None
 
         #TODO Castling check
+        if (move.castling):
+            if move.start_move[0] > move.end_move[0]:
+                rook_pos = (0, move.start_move[1])
+                rook = board[rook_pos[1]][rook_pos[0]]
+
+                board[rook_pos[1]][3] = rook
+                rook.moves += 1
+                board[rook_pos[1]][rook_pos[0]] = None
+            else:
+                rook_pos = (7, move.start_move[1])
+                rook = board[rook_pos[1]][rook_pos[0]]
+
+                board[rook_pos[1]][5] = rook
+                rook.moves += 1
+                board[rook_pos[1]][rook_pos[0]] = None
+
 
 
     def parse_move(self, start: str, end: str, current_board: list, to_move: PieceColor, previous_move: ChessMove):
