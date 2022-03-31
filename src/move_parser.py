@@ -22,6 +22,7 @@ class MoveParser:
     """ Parser to take a string value and return a ChessMove"""
     current_board: list
     current_move: ChessMove
+    previous_move: ChessMove
 
 
     def _str_to_tuple(self, string: str):
@@ -50,15 +51,35 @@ class MoveParser:
         return self._str_to_tuple(start), self._str_to_tuple(end)
 
 
+    def _en_passant_check(self):
+        """ Check if the current move is en passant """
+
+        y_diff = 1 if self.current_move.piece.color == PieceColor.WHITE else -1
+        if (
+            self.previous_move.piece.moves == 1 and
+            abs(self.previous_move.start_move[1] - self.previous_move.end_move[1]) == 2 and
+            (self.current_move.end_move[1] - self.previous_move.end_move[1]) == y_diff
+           ):
+            self.current_move.en_passant = True
+            return True
+
+        else:
+            return False
+
+
     def possible_move(self):
         """ Check if the current move defined is a possible move """
 
         end_piece = self.current_board[self.current_move.end_move[1]][self.current_move.end_move[0]]
 
+        # Check you're not landing on your own piece
         if end_piece and (end_piece.color == self.current_move.piece.color):
             return False
-        else:
+        elif end_piece:
             self.current_move.capture = end_piece
+
+        #TODO add check for if you're in check, protect the check
+        #TODO add a check to mark a move as making a check
 
         match self.current_move.piece.piece_type:
             case PieceType.PAWN:
@@ -78,18 +99,20 @@ class MoveParser:
     def valid_move_pawn(self):
         """ Evaluate if a pawn move is valid """
 
-        # TODO Get the rest of the valid pawn moves working
-        # Black/White distinction
-        # Taking another piece
-        # En passant
+        x_change = self.current_move.end_move[0] - self.current_move.start_move[0]
+        y_change = self.current_move.end_move[1] - self.current_move.start_move[1]
 
-        x_change = abs(self.current_move.end_move[0] - self.current_move.start_move[0])
-        y_change = abs(self.current_move.end_move[1] - self.current_move.start_move[1])
+        y_direction = 1 if (self.current_move.piece.color == PieceColor.WHITE) else -1
 
+        if x_change in (1, -1):
+            return (
+                (self.current_move.capture != None) and (self.current_move.capture.color != self.current_move.piece.color) or
+                self._en_passant_check()
+            )
         if (self.current_move.piece.moves == 0):
-            return (x_change == 0) and (y_change in (1,2))
+            return (x_change == 0) and (y_change in (1 * y_direction, 2 * y_direction))
         else:
-            return (x_change == 0) and (y_change == 1)
+            return (x_change == 0) and (y_change == (1 * y_direction))
 
     def valid_move_knight(self):
         """ Evaluate if a knight move is valid """
@@ -174,15 +197,26 @@ class MoveParser:
         return (x_change <= 1) and (y_change <= 1)
 
 
-    def make_move(self):
-        self.current_board[self.current_move.end_move[1]][self.current_move.end_move[0]] = self.current_move.piece
-        self.current_board[self.current_move.start_move[1]][self.current_move.start_move[0]] = None
+    def make_move(self, board: list, move: ChessMove):
+        """ Make a Chess move on a given board """
+        board[move.end_move[1]][move.end_move[0]] = move.piece
+        board[move.start_move[1]][move.start_move[0]] = None
+
+        # En passant check
+        if (move.en_passant):
+            y_diff = -1 if move.piece.color == PieceColor.WHITE else 1
+
+            remove_y = move.end_move[1] + y_diff
+            board[remove_y][move.end_move[0]] = None
+
+        # Castling check
 
 
-    def parse_move(self, start: str, end: str, current_board: list, to_move: PieceColor):
+    def parse_move(self, start: str, end: str, current_board: list, to_move: PieceColor, previous_move: ChessMove):
         """ Parse a move defined by a start and end (e.g. a3, a4) and turn it into a ChessMove type """
 
         self.current_board = current_board
+        self.previous_move = previous_move
 
         start_move, end_move = self.convert_start_end(start, end)
         self.current_move = ChessMove(
@@ -202,7 +236,7 @@ class MoveParser:
 
         if self.possible_move():
             self.current_move.piece.moves += 1
-            self.make_move()
+            return self.current_move
         else:
             raise Exception("Invalid move attempted")
 

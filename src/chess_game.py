@@ -12,20 +12,24 @@ class ChessGameEngine:
     renderer = None
     move_parser = None
     to_move = PieceColor.WHITE
+    move_list = []
 
 
     def __init__(self) -> None:
         # Create the basic board
         self.renderer = ChessRenderer()
         self.move_parser = MoveParser()
+        self.move_list = [None]
         pass
 
 
     # Move
     def move(self, start: str, end: str) -> bool:
         """ Move a piece from the start position to the end position """
-        self.move_parser.parse_move(start, end, self.board, self.to_move)
-        
+        this_move = self.move_parser.parse_move(start, end, self.board, self.to_move, self.move_list[-1])
+        self.move_parser.make_move(self.board, this_move)
+        self.move_list.append(this_move)
+
         if (self.to_move == PieceColor.WHITE):
             self.to_move = PieceColor.BLACK
         else:
