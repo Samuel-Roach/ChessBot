@@ -107,5 +107,7 @@ GAME_ICONS = {
         "BLACK_TILE": "▮",
         "WHITE_TILE": "▯",
 
-        "BOARD": "img/BOARD.png"
+        "BOARD": "img/BOARD.png",
+        "PREVIOUS_MOVE": "img/PREVIOUS_MOVE.png",
+        "CHECK_MOVE": "img/CHECK_MOVE.png"
     }

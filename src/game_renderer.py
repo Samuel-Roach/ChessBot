@@ -3,6 +3,7 @@ import os
 
 from PIL import Image
 from src.chess_piece import ChessPiece
+from src.move_parser import ChessMove
 
 class ChessRenderer:
     """ Renderer for a game of chess """
@@ -16,6 +17,7 @@ class ChessRenderer:
 
     def _render_row(self, row: list, row_no: int):
         """ Return a string representation of a row on a chess board """
+
         column = 1
         tile_color = self.ICONS["BLACK_TILE"] if row_no % 2 == column % 2 else self.ICONS["WHITE_TILE"]
         render_array = []
@@ -35,6 +37,7 @@ class ChessRenderer:
 
     def render(self, board: list):
         """ Return a string representation of the board """
+
         render_rows = []
 
         row_no = 1
@@ -45,12 +48,22 @@ class ChessRenderer:
         return '\n'.join(render_rows)
 
 
-    def render_file(self, board: list, save_name: str):
+    def render_file(self, board: list, previous_move: ChessMove, save_name: str):
         """ Return the string location of a representation image of this board """
+
         background = Image.open(self.ICONS["BOARD"], 'r').convert('RGBA').rotate(180)
         final_image = Image.new('RGBA', (1200, 1200))
         final_image.paste(background)
 
+        # Previous move highlighting
+        if (previous_move != None):
+            highlight_image = Image.open(self.ICONS["PREVIOUS_MOVE"], 'r').convert('RGBA')
+            start_move_offset = (1050 - (150 * previous_move.start_move[0]), (150 * previous_move.start_move[1]))
+            end_move_offset = (1050 - (150 * previous_move.end_move[0]), (150 * previous_move.end_move[1]))
+            final_image.paste(highlight_image, start_move_offset, highlight_image)
+            final_image.paste(highlight_image, end_move_offset, highlight_image)
+
+        # Piece rendering
         position = (0, 0)
         for row in board:
             for item in row:

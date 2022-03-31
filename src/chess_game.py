@@ -44,7 +44,7 @@ class ChessGameEngine:
 
     def render_board_image(self, file_name: str) -> str:
         """ Render the current board as an image and save it to the given filename """
-        return self.renderer.render_file(self.board, file_name)
+        return self.renderer.render_file(self.board, self.move_list[-1], file_name)
 
 
     def get_color_to_move(self):

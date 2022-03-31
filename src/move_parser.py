@@ -209,7 +209,7 @@ class MoveParser:
             remove_y = move.end_move[1] + y_diff
             board[remove_y][move.end_move[0]] = None
 
-        # Castling check
+        #TODO Castling check
 
 
     def parse_move(self, start: str, end: str, current_board: list, to_move: PieceColor, previous_move: ChessMove):
