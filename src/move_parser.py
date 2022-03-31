@@ -212,8 +212,6 @@ class MoveParser:
         x_change = self.current_move.end_move[0] - self.current_move.start_move[0]
         y_change = abs(self.current_move.end_move[1] - self.current_move.start_move[1])
 
-        # TODO Get castling working
-
         return ((abs(x_change) <= 1) and (y_change <= 1)) or (self._castling_check(x_change) and y_change == 0)
 
 
@@ -229,7 +227,7 @@ class MoveParser:
             remove_y = move.end_move[1] + y_diff
             board[remove_y][move.end_move[0]] = None
 
-        #TODO Castling check
+        # Castling check
         if (move.castling):
             if move.start_move[0] > move.end_move[0]:
                 rook_pos = (0, move.start_move[1])
