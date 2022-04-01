@@ -2,5 +2,4 @@
 board_renders/*
 .vscode
 __pycache__
-todo
 !board_renders/
