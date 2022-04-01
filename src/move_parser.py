@@ -93,6 +93,20 @@ class MoveParser:
 
         return False
 
+
+    def _color_in_check(self, piece_color: PieceColor):
+        """ Check if a color is in check """
+
+        # TODO List of all places a e.g. white piece could move to
+        # TODO All white pieces defended by another white piece
+        # for every position on the board
+            # if the piece is opposite to piece_color
+                # check the possible locations for if the piece_color.king is there
+                # if so, color is in check
+        # https://gist.github.com/pingpoli/1d7e0d4cef2090fd1e396bd4c60c70bd
+        return list
+
+
     def possible_move(self):
         """ Check if the current move defined is a possible move """
         end_piece = self.current_board[self.current_move.end_move[1]][self.current_move.end_move[0]]
@@ -104,21 +118,33 @@ class MoveParser:
             self.current_move.capture = end_piece
 
         #TODO add check for if you're in check, protect the check
+        #TODO Check that you're not moving into check
         #TODO add a check to mark a move as making a check
+
+        return_value = False
 
         match self.current_move.piece.piece_type:
             case PieceType.PAWN:
-                return self.valid_move_pawn()
+                return_value = self.valid_move_pawn()
             case PieceType.KNIGHT:
-                return self.valid_move_knight()
+                return_value = self.valid_move_knight()
             case PieceType.BISHOP:
-                return self.valid_move_bishop()
+                return_value = self.valid_move_bishop()
             case PieceType.ROOK:
-                return self.valid_move_rook()
+                return_value = self.valid_move_rook()
             case PieceType.QUEEN:
-                return self.valid_move_queen()
+                return_value = self.valid_move_queen()
             case PieceType.KING:
-                return self.valid_move_king()
+                return_value = self.valid_move_king()
+
+        # TODO Check whether check has been made
+        # TODO For check we need to use a Threat map https://levelup.gitconnected.com/finding-all-legal-chess-moves-2cb872d05bc6
+
+        check_color = PieceColor.BLACK if self.current_move.piece.color == PieceColor.WHITE else PieceColor.BLACK
+        if self._color_in_check(check_color):
+            self.current_move.check = True
+
+        return return_value
 
 
     def valid_move_pawn(self):
@@ -273,5 +299,4 @@ class MoveParser:
         else:
             raise Exception("Invalid move attempted")
 
-        # Check if castling is taking place
         # Check if check/mate
