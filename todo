@@ -24,3 +24,5 @@ TODO ADd highlight if king is checked
 TODO flip board for black/white players
 TODO Revert to traceback/normal errors
 https://levelup.gitconnected.com/finding-all-legal-chess-moves-2cb872d05bc6
+TODO Should be a map of users, and not user id
+TODO Check data working

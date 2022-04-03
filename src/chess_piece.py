@@ -5,6 +5,7 @@ class PieceColor(Enum):
     """ Enum representation of a Chess Piece's Color """
     WHITE = 0
     BLACK = 1
+    NEUTRAL = 2
 
 
 class PieceType(Enum):

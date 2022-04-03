@@ -1,5 +1,6 @@
 from typing import Tuple
 from src.chess_piece import ChessPiece, PieceColor, PieceType
+from constants.transform_constants import PIECE_TRANSFORMS
 from dataclasses import dataclass
 
 @dataclass
@@ -94,17 +95,58 @@ class MoveParser:
         return False
 
 
+    def _get_threat_matrix(self, piece_color: PieceColor):
+        """ Get the list of squares that a color is threatening """
+        threat_matrix = []
+
+        for x in range(0, 7):
+            for y in range(0, 7):
+                piece : ChessPiece = self.current_board[y][x]
+                if (piece != None) and (piece.color == piece_color):
+                    # Loop over the pieces possibles positions checking if they're in check
+                    # Add defended positions too
+                    piece_transforms = PIECE_TRANSFORMS[piece.piece_type]
+                    color_transforms = PieceColor.NEUTRAL if PieceColor.NEUTRAL in piece_transforms else piece.color
+                    
+                    for transform in piece_transforms[color_transforms]:
+                        direction_x = transform[0]
+                        direction_y = transform[1]
+                        direction_mag = transform[2]
+
+                        for mag in range(1, direction_mag):
+                            if (y + (direction_y * mag) > 7 or y + (direction_y * mag) < 0 or x + (direction_x * mag) > 7 or x + (direction_x * mag) < 0):
+                                break
+
+                            checking_location : ChessPiece = self.current_board[y + (direction_y * mag)][x + (direction_x * mag)]
+                            if checking_location == None:
+                                threat_matrix.append(tuple(x + (direction_x * mag), y + (direction_y * mag)))
+                            elif checking_location.color == piece.color:
+                                threat_matrix.append(tuple(x + (direction_x * mag), y + (direction_y * mag)))
+                                break
+                            else:
+                                break
+
+
     def _color_in_check(self, piece_color: PieceColor):
         """ Check if a color is in check """
 
-        # TODO List of all places a e.g. white piece could move to
-        # TODO All white pieces defended by another white piece
         # for every position on the board
             # if the piece is opposite to piece_color
                 # check the possible locations for if the piece_color.king is there
                 # if so, color is in check
         # https://gist.github.com/pingpoli/1d7e0d4cef2090fd1e396bd4c60c70bd
-        return list
+        threat_matrix = []
+        king_location = ()
+
+        for x in range(0, 7):
+            for y in range(0, 7):
+                piece : ChessPiece = self.current_board[y][x]
+                if (piece.piece_type == PieceType.KING and piece.color == piece_color):
+                    king_location = (x, y)
+
+        threat_color = PieceColor.WHITE if piece_color == PieceColor.BLACK else PieceColor.BLACK
+
+        return king_location in self._get_threat_matrix(threat_color)
 
 
     def possible_move(self):
@@ -117,9 +159,9 @@ class MoveParser:
         elif end_piece:
             self.current_move.capture = end_piece
 
-        #TODO add check for if you're in check, protect the check
-        #TODO Check that you're not moving into check
-        #TODO add a check to mark a move as making a check
+        #add check for if you're in check, protect the check
+        # Check that you're not moving into check
+        #add a check to mark a move as making a check
 
         return_value = False
 
@@ -137,11 +179,17 @@ class MoveParser:
             case PieceType.KING:
                 return_value = self.valid_move_king()
 
-        # TODO Check whether check has been made
-        # TODO For check we need to use a Threat map https://levelup.gitconnected.com/finding-all-legal-chess-moves-2cb872d05bc6
+        # Whether check has been made
+        # For check we need to use a Threat map https://levelup.gitconnected.com/finding-all-legal-chess-moves-2cb872d05bc6
+        enemy_color = PieceColor.BLACK if self.current_move.piece.color == PieceColor.WHITE else PieceColor.BLACK
 
-        check_color = PieceColor.BLACK if self.current_move.piece.color == PieceColor.WHITE else PieceColor.BLACK
-        if self._color_in_check(check_color):
+        if self.previous_move.check and self.current_move.end_move in self._get_threat_matrix(enemy_color):
+            raise Exception("You must move out of check")
+
+        if self._color_in_check(self.current_move.piece.color):
+            raise Exception("You can't move into check")
+
+        if self._color_in_check(enemy_color):
             self.current_move.check = True
 
         return return_value

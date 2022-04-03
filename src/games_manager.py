@@ -1,3 +1,4 @@
+from this import d
 import discord
 
 from dataclasses import dataclass
@@ -86,6 +87,17 @@ class GamesManager:
             return []
 
 
+    def get_received_challenges(self, user: discord.User):
+        """ Get challengers extended to a receiving user """
+        challengers = []
+
+        for userid in self.CHALLENGES:
+            if user.id in self.CHALLENGES[userid]:
+                challengers.append(userid)
+
+        return challengers
+
+
     def _check_challenge_exists(self, extender: discord.User, receiver: discord.User):
         """ Checks whether a challenge exists between an extender and receiver """
         if extender.id in self.CHALLENGES:
@@ -110,7 +122,7 @@ class GamesManager:
         return True, ""
 
 
-    def accept_challenge(self, acceptor: discord.User, extender: discord.User): 
+    def accept_challenge(self, acceptor: discord.User, extender: discord.User):
         """ Accept a challenge from the extender as the given acceptor """
         valid, error = self._check_valid_acceptance(extender, acceptor)
         
