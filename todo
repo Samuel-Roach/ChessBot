@@ -1,14 +1,14 @@
 TODO Remove redundant code
-TODO Implement basic moving
-TODO Implement taking pieces
+Implement basic moving
+Implement taking pieces
 TODO Add embed buttons for conceding?
 TODO Error handling
-TODO Move all code files except bot.py into folders
+Move all code files except bot.py into folders
 TODO Finish readme
 TODO Plain $accept just accepts first challenge
 TODO Add helpers so I don't need to keep re writing commands
 TODO Add comments
-TODO Fix misisng Pylance imports
+Fix misisng Pylance imports
 TODO Helper functions
 TODO Logging
 TODO game renderer has a lot of transforms I think are unnecessary
@@ -20,9 +20,10 @@ TODO Add a bunch of different options for customisability
     Pieces
 TODO Cleanup move parser to throw errors suitable for attempted move made
 TODO Write tests CI etc https://www.youtube.com/watch?v=oi94qEvi9Qo https://www.youtube.com/watch?v=eB0nUzAI7M8
-TODO ADd highlight if king is checked
+ADd highlight if king is checked
 TODO flip board for black/white players
 TODO Revert to traceback/normal errors
 https://levelup.gitconnected.com/finding-all-legal-chess-moves-2cb872d05bc6
 TODO Should be a map of users, and not user id
 TODO Check data working
+TODO pytest

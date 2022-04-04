@@ -346,4 +346,4 @@ class MoveParser:
         else:
             raise Exception("Invalid move attempted")
 
-        # Check if check/mate
+        # TODO Check if check/mate
