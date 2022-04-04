@@ -95,12 +95,12 @@ class MoveParser:
         return False
 
 
-    def _get_threat_matrix(self, piece_color: PieceColor):
+    def _get_threat_matrix(self, piece_color: PieceColor) -> list:
         """ Get the list of squares that a color is threatening """
         threat_matrix = []
 
-        for x in range(0, 7):
-            for y in range(0, 7):
+        for x in range(0, 8):
+            for y in range(0, 8):
                 piece : ChessPiece = self.current_board[y][x]
                 if (piece != None) and (piece.color == piece_color):
                     # Loop over the pieces possibles positions checking if they're in check
@@ -119,12 +119,17 @@ class MoveParser:
 
                             checking_location : ChessPiece = self.current_board[y + (direction_y * mag)][x + (direction_x * mag)]
                             if checking_location == None:
-                                threat_matrix.append(tuple(x + (direction_x * mag), y + (direction_y * mag)))
+                                threat_matrix.append((x + (direction_x * mag), y + (direction_y * mag)))
                             elif checking_location.color == piece.color:
-                                threat_matrix.append(tuple(x + (direction_x * mag), y + (direction_y * mag)))
+                                threat_matrix.append((x + (direction_x * mag), y + (direction_y * mag)))
+                                break
+                            elif checking_location.color != piece_color:
+                                threat_matrix.append((x + (direction_x * mag), y + (direction_y * mag)))
                                 break
                             else:
                                 break
+
+        return threat_matrix
 
 
     def _color_in_check(self, piece_color: PieceColor):
@@ -138,11 +143,13 @@ class MoveParser:
         threat_matrix = []
         king_location = ()
 
-        for x in range(0, 7):
-            for y in range(0, 7):
+        for x in range(0, 8):
+            for y in range(0, 8):
                 piece : ChessPiece = self.current_board[y][x]
+                if piece == None: continue
                 if (piece.piece_type == PieceType.KING and piece.color == piece_color):
                     king_location = (x, y)
+
 
         threat_color = PieceColor.WHITE if piece_color == PieceColor.BLACK else PieceColor.BLACK
 
@@ -159,10 +166,6 @@ class MoveParser:
         elif end_piece:
             self.current_move.capture = end_piece
 
-        #add check for if you're in check, protect the check
-        # Check that you're not moving into check
-        #add a check to mark a move as making a check
-
         return_value = False
 
         match self.current_move.piece.piece_type:
@@ -178,19 +181,6 @@ class MoveParser:
                 return_value = self.valid_move_queen()
             case PieceType.KING:
                 return_value = self.valid_move_king()
-
-        # Whether check has been made
-        # For check we need to use a Threat map https://levelup.gitconnected.com/finding-all-legal-chess-moves-2cb872d05bc6
-        enemy_color = PieceColor.BLACK if self.current_move.piece.color == PieceColor.WHITE else PieceColor.BLACK
-
-        if self.previous_move.check and self.current_move.end_move in self._get_threat_matrix(enemy_color):
-            raise Exception("You must move out of check")
-
-        if self._color_in_check(self.current_move.piece.color):
-            raise Exception("You can't move into check")
-
-        if self._color_in_check(enemy_color):
-            self.current_move.check = True
 
         return return_value
 
@@ -265,9 +255,6 @@ class MoveParser:
                     return True
 
                 if self.current_board[y][self.current_move.start_move[0]] not in [None, self.current_move.piece]:
-                    print("Can't move")
-                    print(f"{self.current_move.piece}")
-                    print(f"{self.current_board[y][self.current_move.start_move[0]]}")
                     return False
 
             return True
@@ -317,6 +304,18 @@ class MoveParser:
                 board[rook_pos[1]][5] = rook
                 rook.moves += 1
                 board[rook_pos[1]][rook_pos[0]] = None
+
+
+        enemy_color = PieceColor.BLACK if move.piece.color == PieceColor.WHITE else PieceColor.BLACK
+
+        # if self.previous_move != None and self.previous_move.check and move.end_move in self._get_threat_matrix(enemy_color):
+        #     raise Exception("You must move out of check")
+
+        if self._color_in_check(move.piece.color):
+            raise Exception("You can't move into check")
+
+        if self._color_in_check(enemy_color):
+            move.check = True
 
 
 

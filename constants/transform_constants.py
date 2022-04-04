@@ -6,14 +6,14 @@ from src.chess_piece import ChessPiece, PieceType, PieceColor
 PIECE_TRANSFORMS = {
     PieceType.KNIGHT: {
         PieceColor.NEUTRAL: [
-            (1, 2),
-            (2, 1),
-            (2, -1),
-            (1, -2),
-            (-1, -2),
-            (-2, -1),
-            (-2, 1),
-            (-1, 2)
+            (1, 2, 1),
+            (2, 1, 1),
+            (2, -1, 1),
+            (1, -2, 1),
+            (-1, -2, 1),
+            (-2, -1, 1),
+            (-2, 1, 1),
+            (-1, 2, 1)
         ]
     },
     PieceType.ROOK: {

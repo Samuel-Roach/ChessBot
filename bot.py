@@ -58,16 +58,13 @@ async def _challenges(ctx):
 async def _accept(ctx, user: discord.User):
     """ Accept a specific challenge """
     try:
-        if (user):
-            games_manager.accept_challenge(ctx.author, user)
-            challenge_accepted_embed = embeds.accept_challenge(user)
-            await ctx.send(embed = challenge_accepted_embed)
+        games_manager.accept_challenge(ctx.author, user)
+        challenge_accepted_embed = embeds.accept_challenge(user)
+        await ctx.send(embed = challenge_accepted_embed)
 
-            created_game = games_manager.find_game_for_user(ctx.author)
-            current_move_embed, current_move_file = embeds.current_move(created_game.white, PieceColor.WHITE, games_manager.render_location(created_game))
-            await ctx.send(embed=current_move_embed, file=current_move_file)
-        else:
-            print("Accepting the first challenge")
+        created_game = games_manager.find_game_for_user(ctx.author)
+        current_move_embed, current_move_file = embeds.current_move(created_game.white, PieceColor.WHITE, games_manager.render_location(created_game))
+        await ctx.send(embed=current_move_embed, file=current_move_file)
             
     except Exception as error:
         error_embed = embeds.error(traceback.format_exc())
