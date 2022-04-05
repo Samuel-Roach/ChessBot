@@ -20,7 +20,7 @@ TODO Add a bunch of different options for customisability
     Pieces
 TODO Cleanup move parser to throw errors suitable for attempted move made
 TODO Write tests CI etc https://www.youtube.com/watch?v=oi94qEvi9Qo https://www.youtube.com/watch?v=eB0nUzAI7M8
-ADd highlight if king is checked
+Add highlight if king is checked
 TODO flip board for black/white players
 TODO Revert to traceback/normal errors
 https://levelup.gitconnected.com/finding-all-legal-chess-moves-2cb872d05bc6

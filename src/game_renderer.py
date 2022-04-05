@@ -79,15 +79,13 @@ class ChessRenderer:
             final_image.paste(check_image, check_offset, check_image)
 
         # Piece rendering
-        position = (0, 0)
-        for row in board:
-            for item in row:
-                if type(item) is ChessPiece:
-                    item_image = Image.open(self.ICONS[item.color][item.piece_type]["image"], 'r').convert('RGBA').rotate(180)
-                    offset = (1050 - (150 * position[0]), (150 * position[1]))
-                    final_image.paste(item_image, offset, item_image)
-                position = (list(position)[0] + 1, list(position)[1]) 
-            position = (0, list(position)[1] + 1)
+        for x in range(0, 8):
+            for y in range(0, 8):
+                piece: ChessPiece = board[y][x]
+                if piece != None:
+                    piece_image = Image.open(self.ICONS[piece.color][piece.piece_type]["image"], 'r').convert('RGBA').rotate(180)
+                    offset = (1050 - (150 * x), (150 * y))
+                    final_image.paste(piece_image, offset, piece_image)
 
         if not os.path.exists('board_renders/'):
             os.mkdir('board_renders')
