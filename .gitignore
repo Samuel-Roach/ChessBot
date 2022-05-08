@@ -1,6 +1,8 @@
 .env
 env
-board_renders/*
 .vscode
 __pycache__
 !board_renders/
+board_renders/*
+!logging/
+logging/*
