@@ -1,5 +1,3 @@
-from cmath import log
-from distutils.debug import DEBUG
 import os
 import discord
 import logging
