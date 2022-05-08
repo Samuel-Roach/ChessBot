@@ -1,4 +1,4 @@
-.env
+env
 board_renders/*
 .vscode
 __pycache__
