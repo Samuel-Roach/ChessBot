@@ -1,4 +1,3 @@
-from this import d
 import discord
 
 from dataclasses import dataclass

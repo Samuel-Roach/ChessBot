@@ -116,4 +116,9 @@ async def _stop(ctx):
 # Establish commands for creating a challenge, making moves, resigning etc.
 # Establish aliases
 
-client.run(TOKEN)
+def main():
+    client.run(TOKEN)
+
+
+if __name__ == "__main__":
+    main()
