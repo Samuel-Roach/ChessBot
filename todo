@@ -28,3 +28,4 @@ TODO Should be a map of users, and not user id
 TODO Check data working
 TODO pytest
 TODO Add command line arguments
+TODO Add check for stalemate

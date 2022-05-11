@@ -156,6 +156,16 @@ class MoveParser:
         return king_location in self._get_threat_matrix(threat_color)
 
 
+    def _color_in_checkmate(self, piece_color: PieceColor):
+        """ Check if a color has been checkmated """
+
+        # For every piece that is of piece_color
+        #   For every move that piece can make
+        #       if the resultant board !_color_in_check
+        #           return false
+        # return true
+
+
     def possible_move(self):
         """ Check if the current move defined is a possible move """
         end_piece = self.current_board[self.current_move.end_move[1]][self.current_move.end_move[0]]
@@ -317,6 +327,10 @@ class MoveParser:
         if self._color_in_check(enemy_color):
             move.check = True
 
+            # TODO Check if check/mate
+            if (self._color_in_checkmate(enemy_color)):
+                move.checkmate = True
+
 
 
     def parse_move(self, start: str, end: str, current_board: list, to_move: PieceColor, previous_move: ChessMove):
@@ -345,5 +359,3 @@ class MoveParser:
             return self.current_move
         else:
             raise Exception("Invalid move attempted")
-
-        # TODO Check if check/mate
