@@ -56,6 +56,7 @@ async def _challenge(ctx, user: discord.User):
         challenge_extended_embed = embeds.extend_challenge(user)
         await ctx.send(embed = challenge_extended_embed)
     except Exception as error:
+        LOGGER.exception(f"Exception while trying to perform challenge command: {error}")
         error_embed = embeds.error(traceback.format_exc())
         await ctx.send(embed = error_embed)
 
@@ -84,6 +85,7 @@ async def _accept(ctx, user: discord.User):
         await ctx.send(embed=current_move_embed, file=current_move_file)
             
     except Exception as error:
+        LOGGER.exception(f"Exception while trying to perform accept command: {error}")
         error_embed = embeds.error(traceback.format_exc())
         await ctx.send(embed=error_embed)
 
@@ -103,6 +105,7 @@ async def _move(ctx, move_start, move_end):
         current_move_embed, current_move_file = embeds.current_move(current_user, piece_color, games_manager.render_location(current_game))
         await ctx.send(embed=current_move_embed, file=current_move_file)
     except Exception as error:
+        LOGGER.exception(f"Exception while trying to perform move command: {error}")
         error_embed = embeds.error(traceback.format_exc())
         await ctx.send(embed=error_embed)
 

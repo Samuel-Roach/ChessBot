@@ -27,4 +27,4 @@ https://levelup.gitconnected.com/finding-all-legal-chess-moves-2cb872d05bc6
 TODO Should be a map of users, and not user id
 TODO Check data working
 TODO pytest
-TODO Add command line arguyments
+TODO Add command line arguments
