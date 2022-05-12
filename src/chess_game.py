@@ -35,6 +35,10 @@ class ChessGameEngine:
         else:
             self.to_move = PieceColor.WHITE
 
+        print(this_move)
+        if this_move.checkmate:
+            print("CHECKMATE")
+
 
     def render_board(self) -> str:
         """ Render the current board state in a code block to preserve whitespace """

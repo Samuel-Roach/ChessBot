@@ -95,13 +95,13 @@ class MoveParser:
         return False
 
 
-    def _get_threat_matrix(self, piece_color: PieceColor) -> list:
-        """ Get the list of squares that a color is threatening """
+    def _get_threat_matrix_on_board(self, piece_color: PieceColor, board: list) -> list:
+        """ Get the list of squares that a color is threatening on a board """
         threat_matrix = []
 
         for x in range(0, 8):
             for y in range(0, 8):
-                piece : ChessPiece = self.current_board[y][x]
+                piece : ChessPiece = board[y][x]
                 if (piece != None) and (piece.color == piece_color):
                     # Loop over the pieces possibles positions checking if they're in check
                     # Add defended positions too
@@ -117,7 +117,7 @@ class MoveParser:
                             if (y + (direction_y * mag) > 7 or y + (direction_y * mag) < 0 or x + (direction_x * mag) > 7 or x + (direction_x * mag) < 0):
                                 break
 
-                            checking_location : ChessPiece = self.current_board[y + (direction_y * mag)][x + (direction_x * mag)]
+                            checking_location : ChessPiece = board[y + (direction_y * mag)][x + (direction_x * mag)]
                             if checking_location == None:
                                 threat_matrix.append((x + (direction_x * mag), y + (direction_y * mag)))
                             elif checking_location.color == piece.color:
@@ -132,8 +132,13 @@ class MoveParser:
         return threat_matrix
 
 
-    def _color_in_check(self, piece_color: PieceColor):
-        """ Check if a color is in check """
+    def _get_threat_matrix(self, piece_color: PieceColor) -> list:
+        """ Get the list of squares that a color is threatening """
+        return self._get_threat_matrix_on_board(piece_color, self.current_board)
+
+
+    def _color_in_check_on_board(self, piece_color: PieceColor, board: list) -> bool:
+        """ Check if a color is in check on a certain board """
 
         # for every position on the board
             # if the piece is opposite to piece_color
@@ -144,7 +149,7 @@ class MoveParser:
 
         for x in range(0, 8):
             for y in range(0, 8):
-                piece : ChessPiece = self.current_board[y][x]
+                piece : ChessPiece = board[y][x]
                 if piece == None: continue
                 if (piece.piece_type == PieceType.KING and piece.color == piece_color):
                     king_location = (x, y)
@@ -155,8 +160,55 @@ class MoveParser:
         return king_location in self._get_threat_matrix(threat_color)
 
 
+    def _color_in_check(self, piece_color: PieceColor) -> bool:
+        """ Check if a color is in check """
+        return self._color_in_check_on_board(piece_color, self.current_board)
+
+
     def _color_in_checkmate(self, piece_color: PieceColor):
         """ Check if a color has been checkmated """
+
+        for x in range(0, 8):
+            for y in range(0, 8):
+                piece : ChessPiece = self.current_board[y][x]
+                if piece != None and piece.color == piece_color:
+                    piece_transforms = PIECE_TRANSFORMS[piece.piece_type]
+                    color_transforms = PieceColor.NEUTRAL if PieceColor.NEUTRAL in piece_transforms else piece.color
+
+                    for transform in piece_transforms[color_transforms]:
+                        direction_x = transform[0]
+                        direction_y = transform[1]
+                        direction_mag = transform[2]
+
+                        for mag in range(1, direction_mag):
+                            if (y + (direction_y * mag) > 7 or y + (direction_y * mag) < 0 or x + (direction_x * mag) > 7 or x + (direction_x * mag) < 0):
+                                break
+
+                            checking_location : ChessPiece = self.current_board[y + (direction_y * mag)][x + (direction_x * mag)]
+                            if checking_location == None:
+                                # Create a new board with the current piece in the checking_location
+                                # If the new board has !color_in_check of piece_color then we know that
+                                # the piece_color isn't in checkmate
+                                new_board = self.current_board.copy()
+                                new_board[x][y] = None
+                                new_board[x + (direction_x * mag)][y + (direction_y * mag)] = piece
+                                if not self._color_in_check_on_board(piece_color, new_board):
+                                    return False
+                            elif checking_location.color == piece.color:
+                                break
+                            elif checking_location.color != piece_color:
+                                # Create a new board with the current piece in the checking_location
+                                # If the new board has !color_in_check of piece_color then we know that
+                                # the piece_color isn't in checkmate
+                                new_board = self.current_board.copy()
+                                new_board[x][y] = None
+                                new_board[x + (direction_x * mag)][y + (direction_y * mag)] = piece
+                                if not self._color_in_check_on_board(piece_color, new_board):
+                                    return False
+                                break
+                            else:
+                                break
+        return True
 
         # For every piece that is of piece_color
         #   For every move that piece can make
