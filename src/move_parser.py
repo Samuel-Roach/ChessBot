@@ -366,11 +366,7 @@ class MoveParser:
                 rook.moves += 1
                 board[rook_pos[1]][rook_pos[0]] = None
 
-
-        enemy_color = PieceColor.BLACK if move.piece.color == PieceColor.WHITE else PieceColor.BLACK
-
-        # if self.previous_move != None and self.previous_move.check and move.end_move in self._get_threat_matrix(enemy_color):
-        #     raise Exception("You must move out of check")
+        enemy_color = PieceColor.BLACK if move.piece.color == PieceColor.WHITE else PieceColor.WHITE
 
         if self._color_in_check(move.piece.color):
             raise Exception("You can't move into check")
