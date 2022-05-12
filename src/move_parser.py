@@ -140,7 +140,6 @@ class MoveParser:
                 # check the possible locations for if the piece_color.king is there
                 # if so, color is in check
         # https://gist.github.com/pingpoli/1d7e0d4cef2090fd1e396bd4c60c70bd
-        threat_matrix = []
         king_location = ()
 
         for x in range(0, 8):
