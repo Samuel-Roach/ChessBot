@@ -12,6 +12,7 @@ class ChessGameEngine:
     renderer = None
     move_parser = None
     to_move = PieceColor.WHITE
+    winner_color = None
     move_list = []
 
 
@@ -25,19 +26,21 @@ class ChessGameEngine:
 
     # Move
     def move(self, start: str, end: str) -> bool:
-        """ Move a piece from the start position to the end position """
+        """ Move a piece from the start position to the end position, return if the game should carry on"""
         this_move = self.move_parser.parse_move(start, end, self.board, self.to_move, self.move_list[-1])
         self.move_parser.make_move(self.board, this_move)
         self.move_list.append(this_move)
+
+        if this_move.checkmate:
+            self.winner_color = self.to_move
+            return False
 
         if (self.to_move == PieceColor.WHITE):
             self.to_move = PieceColor.BLACK
         else:
             self.to_move = PieceColor.WHITE
 
-        print(this_move)
-        if this_move.checkmate:
-            print("CHECKMATE")
+        return True
 
 
     def render_board(self) -> str:

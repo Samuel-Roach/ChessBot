@@ -2,6 +2,7 @@ import discord
 import constants.message_constants as message_constants
 
 from src.chess_piece import PieceColor
+from src.games_manager import GamesManager
 
 class EmbedEngine:
     """ Engine for generating relevant discord Embeds """
@@ -77,3 +78,15 @@ class EmbedEngine:
         board_embed = self.embed(title, description.format(user.mention, user_color.name), color)
         board_embed.set_image(url="attachment://board.png")
         return board_embed, file
+
+    def game_end(self, winner_user: discord.User,
+                loser_user: discord.User,
+                current_board_location: str,
+                title=message_constants.GAME_END_TITLE,
+                description=message_constants.GAME_END_DESCRIPTION,
+                color=message_constants.GAME_END_COLOR):
+        """ Returns the embed for the winner """
+        file = discord.File(current_board_location, filename="board.png")
+        winner_embed = self.embed(title.format(winner_user.display_name), description.format(winner_user.display_name, loser_user.display_name), color)
+        winner_embed.set_image(url="attachment://board.png")
+        return winner_embed, file

@@ -149,6 +149,11 @@ class GamesManager:
         return self.CURRENT_GAMES[self.find_gameid_for_user(user)]
 
 
+    def remove_current_game_for_user(self, user: discord.User):
+        game_id = self.find_gameid_for_user(user)
+        del self.CURRENT_GAMES[game_id]
+
+
     def render_game(self, current_game: ChessGame):
         """ Return the render of a game from it's game_id """
         try:

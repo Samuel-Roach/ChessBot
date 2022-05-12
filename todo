@@ -30,5 +30,3 @@ TODO pytest
 TODO Add command line arguments
 TODO Add check for stalemate
 TODO File parsing for games
-
-TODO CHECK / CHECKMATE DOESN'T WORK FOR BLACK PIECES?????

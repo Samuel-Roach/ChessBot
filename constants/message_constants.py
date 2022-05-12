@@ -29,5 +29,5 @@ CURRENT_MOVE_DESCRIPTION = '{} to move ({})' # User, Piece.Color
 CURRENT_MOVE_COLOR = discord.Color.blue()
 
 GAME_END_TITLE = '{} wins!' # User
-GAME_END_DESCRIPTION = '{} wins by {}. \nFinal board: {}\n Moves made: {}' # User, Win type, current board, notation
-GAME_END_COLOR = discord.Color.orange()
+GAME_END_DESCRIPTION = '{} wins against {}. \n Final board:' # User, Win type, current board, notation
+GAME_END_COLOR = discord.Color.purple()
