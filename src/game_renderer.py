@@ -23,7 +23,7 @@ class ChessRenderer:
 
         for item in row:
             if type(item) is ChessPiece:
-                render_array.append(self.ICONS[item.color][item.piece_type])
+                render_array.append(self.ICONS[item.color][item.piece_type]['icon'])
             else:
                 render_array.append(tile_color)
 

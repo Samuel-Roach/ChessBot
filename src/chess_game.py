@@ -4,23 +4,36 @@ from src.game_renderer import ChessRenderer
 from src.move_parser import MoveParser
 from src.chess_piece import PieceColor
 
+from copy import deepcopy
 
 class ChessGameEngine:
     """ Engine playing a game of chess """
 
-    board = game_constants.DEFAULT_BOARD
-    renderer = None
-    move_parser = None
-    to_move = PieceColor.WHITE
-    winner_color = None
-    move_list = []
+    renderer = ChessRenderer()
+    move_parser = MoveParser()
 
 
-    def __init__(self) -> None:
+    def __init__(self, move_list=None, board=None, to_move=None, winner_color=None) -> None:
         # Create the basic board
-        self.renderer = ChessRenderer()
-        self.move_parser = MoveParser()
-        self.move_list = [None]
+        if move_list == None:
+            self.move_list = [None]
+        else:
+            self.move_list = move_list
+
+        if board == None:
+            self.board = deepcopy(game_constants.DEFAULT_BOARD)
+        else:
+            self.board = board
+
+        if to_move == None:
+            self.to_move = PieceColor.WHITE
+        else:
+            self.to_move = to_move
+
+        if winner_color == None:
+            self.winner_color = None
+        else:
+            self.winner_color = winner_color
         pass
 
 

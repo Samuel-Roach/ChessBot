@@ -25,10 +25,6 @@ class GamesManager:
     @dataclass
     class ChessGame:
         """ A representation of a chess game, with the users and the game itself """
-        white: discord.User
-        black: discord.User
-        game: ChessGameEngine
-
         def __init__(self, white: discord.User, black: discord.User, game: ChessGameEngine) -> None:
             self.white = white
             self.black = black
@@ -113,7 +109,7 @@ class GamesManager:
 
         if valid:
             for game in self.CURRENT_GAMES:
-                if any([extender.id, receiver.id]) in self.CURRENT_GAMES[game]:
+                if str(extender.id) in game or str(receiver.id) in game:
                     return False, "You can only accept a challenge when both players are out of a game."
         else:
             return False, error
