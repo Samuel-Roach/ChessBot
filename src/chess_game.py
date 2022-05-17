@@ -1,7 +1,7 @@
 import constants.game_constants as game_constants
 
 from src.game_renderer import ChessRenderer
-from src.move_parser import MoveParser
+from src.move_parser import ChessMove, MoveParser
 from src.chess_piece import PieceColor
 
 from copy import deepcopy
@@ -40,13 +40,17 @@ class ChessGameEngine:
     # Move
     def move(self, start: str, end: str) -> bool:
         """ Move a piece from the start position to the end position, return if the game should carry on"""
-        this_move = self.move_parser.parse_move(start, end, self.board, self.to_move, self.move_list[-1])
+        this_move: ChessMove = self.move_parser.parse_move(start, end, self.board, self.to_move, self.move_list[-1])
         self.move_parser.make_move(self.board, this_move)
         self.move_list.append(this_move)
 
         if this_move.checkmate:
             self.winner_color = self.to_move
             return False
+        if this_move.stalemate:
+            self.winner_color = None
+            return False
+
 
         if (self.to_move == PieceColor.WHITE):
             self.to_move = PieceColor.BLACK

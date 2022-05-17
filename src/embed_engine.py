@@ -1,3 +1,4 @@
+from dis import disco
 import discord
 import constants.message_constants as message_constants
 
@@ -90,3 +91,15 @@ class EmbedEngine:
         winner_embed = self.embed(title.format(winner_user.display_name), description.format(winner_user.display_name, loser_user.display_name), color)
         winner_embed.set_image(url="attachment://board.png")
         return winner_embed, file
+    
+    def game_draw(self, first_user: discord.User,
+                  second_user: discord.User,
+                  current_board_location: str,
+                  title=message_constants.GAME_DRAW_TITLE,
+                  description=message_constants.GAME_DRAW_DESCRIPTION,
+                  color=message_constants.GAME_DRAW_COLOR):
+        """ Returns the embed for a draw """
+        file = discord.File(current_board_location, filename="board.png")
+        draw_embed = self.embed(title, description.format(first_user.display_name, second_user.display_name), color)
+        draw_embed.set_image(url="attachment://board.png")
+        return draw_embed, file

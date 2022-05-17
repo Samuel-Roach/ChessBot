@@ -15,6 +15,7 @@ class ChessMove:
     capture: ChessPiece
     check: bool
     checkmate: bool
+    stalemate: bool
     castling: bool
     en_passant: bool
 
@@ -374,10 +375,11 @@ class MoveParser:
         if self._color_in_check(enemy_color):
             move.check = True
 
-            # TODO Check if check/mate
             if (self._color_in_checkmate(enemy_color)):
                 move.checkmate = True
-
+        else:
+            # Check that stalemate hasn't occured
+            print("Check stalemate")
 
 
     def parse_move(self, start: str, end: str, current_board: list, to_move: PieceColor, previous_move: ChessMove):
@@ -394,6 +396,7 @@ class MoveParser:
             capture=None,
             check=False,
             checkmate=False,
+            stalemate=False,
             castling=False,
             en_passant=False
         )

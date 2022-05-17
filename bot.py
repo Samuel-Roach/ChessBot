@@ -103,10 +103,14 @@ async def _move(ctx, move_start, move_end):
             current_move_embed, current_move_file = embeds.current_move(current_user, piece_color, games_manager.render_location(current_game))
             await ctx.send(embed=current_move_embed, file=current_move_file)
         else:
-            winner_user = current_game.white if current_game.game.winner_color == PieceColor.WHITE else current_game.black
-            loser_user = current_game.black if current_game.game.winner_color == PieceColor.WHITE else current_game.white
-            game_end_embed, game_end_file = embeds.game_end(winner_user, loser_user, games_manager.render_location(current_game))
-            await ctx.send(embed=game_end_embed, file=game_end_file)
+            if current_game.game.winner_color == None:
+                game_end_embed, game_end_file = embeds.game_draw(current_game.white, current_game.black, games_manager.render_location(current_game))
+                await ctx.send(embed=game_end_embed, file=game_end_file)
+            else:
+                winner_user = current_game.white if current_game.game.winner_color == PieceColor.WHITE else current_game.black
+                loser_user = current_game.black if current_game.game.winner_color == PieceColor.WHITE else current_game.white
+                game_end_embed, game_end_file = embeds.game_end(winner_user, loser_user, games_manager.render_location(current_game))
+                await ctx.send(embed=game_end_embed, file=game_end_file)
             games_manager.remove_current_game_for_user(winner_user)
     except Exception as error:
         LOGGER.exception(f"Exception while trying to perform move command: {error}")
