@@ -2,6 +2,7 @@ from typing import Tuple
 from src.chess_piece import ChessPiece, PieceColor, PieceType
 from constants.transform_constants import PIECE_TRANSFORMS
 from dataclasses import dataclass
+from copy import deepcopy
 
 @dataclass
 class ChessMove:
@@ -181,7 +182,8 @@ class MoveParser:
                         direction_y = transform[1]
                         direction_mag = transform[2]
 
-                        for mag in range(1, direction_mag):
+                        for mag in range(direction_mag):
+                            mag += 1
                             if (y + (direction_y * mag) > 7 or y + (direction_y * mag) < 0 or x + (direction_x * mag) > 7 or x + (direction_x * mag) < 0):
                                 break
 
@@ -190,7 +192,7 @@ class MoveParser:
                                 # Create a new board with the current piece in the checking_location
                                 # If the new board has !color_in_check of piece_color then we know that
                                 # the piece_color isn't in checkmate
-                                new_board = self.current_board.copy()
+                                new_board = deepcopy(self.current_board)
                                 new_board[x][y] = None
                                 new_board[x + (direction_x * mag)][y + (direction_y * mag)] = piece
                                 if not self._color_in_check_on_board(piece_color, new_board):
@@ -201,7 +203,7 @@ class MoveParser:
                                 # Create a new board with the current piece in the checking_location
                                 # If the new board has !color_in_check of piece_color then we know that
                                 # the piece_color isn't in checkmate
-                                new_board = self.current_board.copy()
+                                new_board = deepcopy(self.current_board)
                                 new_board[x][y] = None
                                 new_board[x + (direction_x * mag)][y + (direction_y * mag)] = piece
                                 if not self._color_in_check_on_board(piece_color, new_board):
@@ -211,12 +213,57 @@ class MoveParser:
                                 break
         return True
 
-        # For every piece that is of piece_color
-        #   For every move that piece can make
-        #       if the resultant board !_color_in_check
-        #           return false
-        # return true
+    def _color_in_stalemate(self, piece_color: PieceColor) -> bool:
+        """ Return if a color has been stalemated or not """
+        can_move = False
 
+        for x in range(0, 8):
+            for y in range(0, 8):
+                piece : ChessPiece = self.current_board[y][x]
+                if piece != None and piece.color == piece_color:
+                    piece_transforms = PIECE_TRANSFORMS[piece.piece_type]
+                    color_transforms = PieceColor.NEUTRAL if PieceColor.NEUTRAL in piece_transforms else piece.color
+
+                    for transform in piece_transforms[color_transforms]:
+                        direction_x = transform[0]
+                        direction_y = transform[1]
+                        direction_mag = transform[2]
+
+                        for mag in range(direction_mag):
+                            mag += 1
+                            y_checking = y + (direction_y * mag)
+                            x_checking = x + (direction_x * mag)
+
+                            if (y_checking > 7 or y_checking < 0 or x_checking > 7 or x_checking < 0):
+                                break
+
+                            checking_location : ChessPiece = self.current_board[y_checking][x_checking]
+                            if checking_location == None:
+                                # Check if moving this piece results in a check
+                                # If not, this is not a stalemate
+                                new_board = deepcopy(self.current_board)
+                                new_board[x][y] = None
+                                new_board[x + (direction_x * mag)][y + (direction_y * mag)] = piece
+                                if not self._color_in_check_on_board(piece_color, new_board):
+                                    can_move = True
+                                    return (not can_move)
+                                break
+                            elif checking_location.color == piece.color:
+                                break
+                            elif checking_location.color != piece_color:
+                                # Check if taking this piece doesn't result in check
+                                # If so, this isn't a stalemate
+                                new_board = deepcopy(self.current_board)
+                                new_board[x][y] = None
+                                new_board[x + (direction_x * mag)][y + (direction_y * mag)] = piece
+                                if not self._color_in_check_on_board(piece_color, new_board):
+                                    can_move = True
+                                    return (not can_move)
+                                break
+                            else:
+                                break
+
+        return (not can_move)
 
     def possible_move(self):
         """ Check if the current move defined is a possible move """
@@ -378,8 +425,8 @@ class MoveParser:
             if (self._color_in_checkmate(enemy_color)):
                 move.checkmate = True
         else:
-            # Check that stalemate hasn't occured
-            print("Check stalemate")
+            if (self._color_in_stalemate(enemy_color)):
+                move.stalemate = True
 
 
     def parse_move(self, start: str, end: str, current_board: list, to_move: PieceColor, previous_move: ChessMove):
