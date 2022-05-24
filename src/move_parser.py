@@ -115,7 +115,8 @@ class MoveParser:
                         direction_y = transform[1]
                         direction_mag = transform[2]
 
-                        for mag in range(1, direction_mag):
+                        for mag in range(direction_mag):
+                            mag += 1
                             if (y + (direction_y * mag) > 7 or y + (direction_y * mag) < 0 or x + (direction_x * mag) > 7 or x + (direction_x * mag) < 0):
                                 break
 
@@ -156,10 +157,9 @@ class MoveParser:
                 if (piece.piece_type == PieceType.KING and piece.color == piece_color):
                     king_location = (x, y)
 
-
         threat_color = PieceColor.WHITE if piece_color == PieceColor.BLACK else PieceColor.BLACK
 
-        return king_location in self._get_threat_matrix(threat_color)
+        return king_location in self._get_threat_matrix_on_board(threat_color, board)
 
 
     def _color_in_check(self, piece_color: PieceColor) -> bool:
@@ -184,17 +184,20 @@ class MoveParser:
 
                         for mag in range(direction_mag):
                             mag += 1
-                            if (y + (direction_y * mag) > 7 or y + (direction_y * mag) < 0 or x + (direction_x * mag) > 7 or x + (direction_x * mag) < 0):
+                            y_checking = y + (direction_y * mag)
+                            x_checking = x + (direction_x * mag)
+
+                            if (y_checking > 7 or y_checking < 0 or x_checking > 7 or x_checking < 0):
                                 break
 
-                            checking_location : ChessPiece = self.current_board[y + (direction_y * mag)][x + (direction_x * mag)]
+                            checking_location : ChessPiece = self.current_board[y_checking][x_checking]
                             if checking_location == None:
                                 # Create a new board with the current piece in the checking_location
                                 # If the new board has !color_in_check of piece_color then we know that
                                 # the piece_color isn't in checkmate
                                 new_board = deepcopy(self.current_board)
-                                new_board[x][y] = None
-                                new_board[x + (direction_x * mag)][y + (direction_y * mag)] = piece
+                                new_board[y][x] = None
+                                new_board[y_checking][x_checking] = piece
                                 if not self._color_in_check_on_board(piece_color, new_board):
                                     return False
                             elif checking_location.color == piece.color:
@@ -204,14 +207,22 @@ class MoveParser:
                                 # If the new board has !color_in_check of piece_color then we know that
                                 # the piece_color isn't in checkmate
                                 new_board = deepcopy(self.current_board)
-                                new_board[x][y] = None
-                                new_board[x + (direction_x * mag)][y + (direction_y * mag)] = piece
+                                new_board[y][x] = None
+                                new_board[y_checking][x_checking] = piece
                                 if not self._color_in_check_on_board(piece_color, new_board):
                                     return False
                                 break
                             else:
                                 break
         return True
+
+
+    def _check_move_escapes_check(self, old_board, current_y, current_x, new_y, new_x, moved_piece, piece_color):
+        new_board = deepcopy(old_board)
+        new_board[current_y][current_x] = None
+        new_board[new_y][new_x] = moved_piece
+        return not self._color_in_check_on_board(piece_color, new_board)
+
 
     def _color_in_stalemate(self, piece_color: PieceColor) -> bool:
         """ Return if a color has been stalemated or not """
@@ -224,46 +235,84 @@ class MoveParser:
                     piece_transforms = PIECE_TRANSFORMS[piece.piece_type]
                     color_transforms = PieceColor.NEUTRAL if PieceColor.NEUTRAL in piece_transforms else piece.color
 
-                    for transform in piece_transforms[color_transforms]:
-                        direction_x = transform[0]
-                        direction_y = transform[1]
-                        direction_mag = transform[2]
+                    # Separate checks for PAWN
+                    if piece.piece_type == PieceType.PAWN:
+                        movement_factor = 1 if piece_color == PieceColor.WHITE else -1
 
-                        for mag in range(direction_mag):
-                            mag += 1
-                            y_checking = y + (direction_y * mag)
-                            x_checking = x + (direction_x * mag)
-
-                            if (y_checking > 7 or y_checking < 0 or x_checking > 7 or x_checking < 0):
+                        # If the piece is the first time it'll move
+                        if (piece.moves == 0):
+                            checking_location: ChessPiece = self.current_board[y + (2 * movement_factor)][x]
+                            if checking_location == None and self.current_board[y + (1 * movement_factor)][x] == None:
+                                if self._check_move_escapes_check(self.current_board, y, x, y + (2 * movement_factor), x, piece, piece_color):
+                                    return False
+                                break
+                            elif checking_location != None and checking_location.color == piece.color:
+                                break
+                            elif checking_location != None and checking_location.color != piece_color:
                                 break
 
-                            checking_location : ChessPiece = self.current_board[y_checking][x_checking]
+                        # Checks for every other move
+
+                        # Check for moving one place
+                        y_checking = y + movement_factor
+                        x_checking = x
+                        if not (y_checking > 7 or y_checking < 0 or x_checking > 7 or x_checking < 0):
+                            checking_location: ChessPiece = self.current_board[y + movement_factor][x]
                             if checking_location == None:
-                                # Check if moving this piece results in a check
-                                # If not, this is not a stalemate
-                                new_board = deepcopy(self.current_board)
-                                new_board[x][y] = None
-                                new_board[x + (direction_x * mag)][y + (direction_y * mag)] = piece
-                                if not self._color_in_check_on_board(piece_color, new_board):
-                                    can_move = True
-                                    return (not can_move)
-                                break
-                            elif checking_location.color == piece.color:
-                                break
-                            elif checking_location.color != piece_color:
-                                # Check if taking this piece doesn't result in check
-                                # If so, this isn't a stalemate
-                                new_board = deepcopy(self.current_board)
-                                new_board[x][y] = None
-                                new_board[x + (direction_x * mag)][y + (direction_y * mag)] = piece
-                                if not self._color_in_check_on_board(piece_color, new_board):
-                                    can_move = True
-                                    return (not can_move)
-                                break
-                            else:
-                                break
+                                if self._check_move_escapes_check(self.current_board, y, x, y + movement_factor, x, piece, piece_color):
+                                    return False
+                        
+                        y_checking = y + movement_factor
+                        x_checking = x + 1
+                        if not (y_checking > 7 or y_checking < 0 or x_checking > 7 or x_checking < 0):
+                            checking_location: ChessPiece = self.current_board[y + movement_factor][x + 1]
+                            if checking_location != None and checking_location.color != piece.color:
+                                if self._check_move_escapes_check(self.current_board, y, x, y + movement_factor, x + 1, piece, piece_color):
+                                    return False
+                        
+                        y_checking = y + movement_factor
+                        x_checking = x - 1
+                        if not (y_checking > 7 or y_checking < 0 or x_checking > 7 or x_checking < 0):
+                            checking_location: ChessPiece = self.current_board[y + movement_factor][x - 1]
+                            if checking_location != None and checking_location.color != piece.color:
+                                if self._check_move_escapes_check(self.current_board, y, x, y + movement_factor, x - 1, piece, piece_color):
+                                    return False
 
-        return (not can_move)
+                    # Every other piece
+                    else:
+                        for transform in piece_transforms[color_transforms]:
+                            direction_x = transform[0]
+                            direction_y = transform[1]
+                            direction_mag = transform[2]
+
+                            for mag in range(direction_mag):
+                                mag += 1
+                                y_checking = y + (direction_y * mag)
+                                x_checking = x + (direction_x * mag)
+
+                                if (y_checking > 7 or y_checking < 0 or x_checking > 7 or x_checking < 0):
+                                    break
+
+                                checking_location : ChessPiece = self.current_board[y_checking][x_checking]
+                                if checking_location == None:
+                                    # Check if moving this piece results in a check
+                                    # If not, this is not a stalemate
+                                    if self._check_move_escapes_check(self.current_board, y, x, y_checking, x_checking, piece, piece_color):
+                                        return False
+                                    break
+                                elif checking_location.color == piece.color:
+                                    break
+                                elif checking_location.color != piece_color:
+                                    # Check if taking this piece doesn't result in check
+                                    # If so, this isn't a stalemate
+                                    if self._check_move_escapes_check(self.current_board, y, x, y_checking, x_checking, piece, piece_color):
+                                        return False
+                                    break
+                                else:
+                                    break
+
+        return True
+
 
     def possible_move(self):
         """ Check if the current move defined is a possible move """
@@ -311,6 +360,7 @@ class MoveParser:
             return (x_change == 0) and (y_change in (1 * y_direction, 2 * y_direction))
         else:
             return (x_change == 0) and (y_change == (1 * y_direction))
+
 
     def valid_move_knight(self):
         """ Evaluate if a knight move is valid """
