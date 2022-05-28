@@ -2,6 +2,7 @@ import os
 import discord
 import logging
 import traceback
+from discord.ext.commands import Context
 
 from discord.ext import commands
 from dotenv import load_dotenv
@@ -41,14 +42,14 @@ async def on_ready():
 
 
 @client.command(name='foo')
-async def _foo(ctx, arg):
+async def _foo(ctx: Context, arg):
     """ Test command to check the discord bot is connected """
     LOGGER.info("Foo command sent")
     await ctx.send(arg)
 
 
 @client.command(name='challenge', pass_context=True)
-async def _challenge(ctx, user: discord.User):
+async def _challenge(ctx: Context, user: discord.User):
     """ Allow a user to challenge another user to a chess game """
     LOGGER.info("Challenge command sent")
     try:
@@ -62,7 +63,7 @@ async def _challenge(ctx, user: discord.User):
 
 
 @client.command(name='challenges')
-async def _challenges(ctx):
+async def _challenges(ctx: Context):
     """ Get a list of challenged users """
     LOGGER.info("Challenges command sent")
     challenged_users = [ctx.guild.get_member(x).mention for x in games_manager.get_challenges(ctx.author)]
@@ -72,7 +73,7 @@ async def _challenges(ctx):
 
 
 @client.command(name='accept')
-async def _accept(ctx, user: discord.User):
+async def _accept(ctx: Context, user: discord.User):
     """ Accept a specific challenge """
     LOGGER.info("Accept command sent")
     try:
@@ -90,9 +91,10 @@ async def _accept(ctx, user: discord.User):
 
 
 @client.command(name='move')
-async def _move(ctx, move_start, move_end):
+async def _move(ctx: Context, move_start, move_end):
     """ Perform a move in the game """
     LOGGER.info("Move command sent")
+    sent_message: discord.Message = None
     try:
         current_game = games_manager.find_game_for_user(ctx.author)
 
@@ -101,8 +103,9 @@ async def _move(ctx, move_start, move_end):
             # Make the visuals
             current_user, piece_color = games_manager.find_current_user_for_game(current_game)
             current_move_embed, current_move_file = embeds.current_move(current_user, piece_color, games_manager.render_location(current_game))
-            await ctx.send(embed=current_move_embed, file=current_move_file)
+            sent_message = await ctx.send(embed=current_move_embed, file=current_move_file)
         else:
+            # Game is over
             if current_game.game.winner_color == None:
                 game_end_embed, game_end_file = embeds.game_draw(current_game.white, current_game.black, games_manager.render_location(current_game))
                 await ctx.send(embed=game_end_embed, file=game_end_file)
@@ -119,7 +122,7 @@ async def _move(ctx, move_start, move_end):
 
 
 @client.command(name='stop')
-async def _stop(ctx):
+async def _stop(ctx: Context):
     LOGGER.info("Stop command sent")
     """ Stop the bot """
     await ctx.bot.logout()
